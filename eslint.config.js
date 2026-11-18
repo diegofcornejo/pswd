@@ -30,12 +30,12 @@ export default defineConfig(
   react.configs.flat.recommended,
   react.configs.flat['jsx-runtime'],
   jsxA11y.flatConfigs.recommended,
+  reactHooks.configs.flat.recommended,
   astro.configs.recommended,
 
   {
     plugins: {
       perfectionist,
-      'react-hooks': reactHooks,
       'sort-destructure-keys': sortDestructureKeys,
     },
 
@@ -46,9 +46,6 @@ export default defineConfig(
       'perfectionist/sort-interfaces': ['error', { order: 'asc' }],
       'perfectionist/sort-object-types': ['error', { order: 'asc' }],
       'perfectionist/sort-objects': ['warn', { order: 'asc' }],
-      // Same rules as react-hooks v4; v7's React Compiler rules are not enabled yet
-      'react-hooks/exhaustive-deps': 'warn',
-      'react-hooks/rules-of-hooks': 'error',
       'react/jsx-sort-props': [
         'warn',
         { callbacksLast: true, multiline: 'last' },

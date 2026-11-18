@@ -1,59 +1,53 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface CipherTextProps {
+  holdDuration?: number;
   interval?: number;
   text: string;
 }
 
 const chars = '-_~`!@#$%^&*()+=[]{}|;:,.<>?';
 
-export function CipherText({ interval = 50, text }: CipherTextProps) {
-  const [outputText, setOutputText] = useState('');
-  const [isMounted, setIsMounted] = useState(false);
+function randomNoise(length: number) {
+  return Array.from(
+    { length },
+    () => chars[Math.floor(Math.random() * chars.length)],
+  ).join('');
+}
+
+export function CipherText({
+  holdDuration = 6000,
+  interval = 50,
+  text,
+}: CipherTextProps) {
+  // Starts fully revealed so the first client render matches the server HTML
+  const [frame, setFrame] = useState({ noise: '', revealed: text.length });
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    let revealed = 0;
+    let timer: ReturnType<typeof setTimeout>;
 
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
+    const tick = () => {
+      setFrame({ noise: randomNoise(text.length - revealed), revealed });
 
-    if (outputText !== text) {
-      timer = setInterval(() => {
-        if (outputText.length < text.length) {
-          setOutputText(prev => prev + text[prev.length]);
-        } else {
-          clearInterval(timer);
-        }
-      }, interval);
-    }
+      if (revealed < text.length) {
+        revealed++;
+        timer = setTimeout(tick, interval);
+      } else {
+        revealed = 0;
+        timer = setTimeout(tick, holdDuration);
+      }
+    };
 
-    return () => clearInterval(timer);
-  }, [text, interval, outputText]);
+    timer = setTimeout(tick, 0);
 
-  useEffect(() => {
-    if (outputText === text) {
-      setTimeout(() => setOutputText(''), 6000);
-    }
-  }, [outputText, text]);
-
-  const remainder =
-    outputText.length < text.length
-      ? text
-          .slice(outputText.length)
-          .split('')
-          .map(() => chars[Math.floor(Math.random() * chars.length)])
-          .join('')
-      : '';
-
-  if (!isMounted) {
-    return <span>{text}</span>;
-  }
+    return () => clearTimeout(timer);
+  }, [text, interval, holdDuration]);
 
   return (
-    <span className="text-white">
-      {outputText}
-      {remainder}
+    <span>
+      {text.slice(0, frame.revealed)}
+      {frame.noise}
     </span>
   );
 }
