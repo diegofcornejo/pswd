@@ -1,125 +1,125 @@
 export type PresetConfig = {
+  customSymbols?: string;
+  excludeSimilar?: boolean;
+  excludeSymbols?: string;
   id: string;
-  label: string;
-  length: number;
-  includeUpper: boolean;
   includeLower: boolean;
   includeNumbers: boolean;
   includeSymbols: boolean;
-  excludeSimilar?: boolean;
-  customSymbols?: string;
-  excludeSymbols?: string;
+  includeUpper: boolean;
+  label: string;
+  length: number;
 };
 
 export const presets: PresetConfig[] = [
   // 📂 Databases
   {
+    customSymbols: '',
+    excludeSimilar: false,
+    // Avoid characters that can cause issues in connection strings
+    excludeSymbols: '\'"\\/@',
     id: 'postgres',
+    includeLower: true,
+    includeNumbers: true,
+    includeSymbols: true,
+    includeUpper: true,
     label: 'PostgreSQL',
     length: 20,
-    includeUpper: true,
+  },
+  {
+    customSymbols: '',
+    excludeSimilar: false,
+    // Avoid characters that can interfere with shell or connection strings
+    excludeSymbols: '\'"\\/',
+    id: 'mysql',
     includeLower: true,
     includeNumbers: true,
     includeSymbols: true,
-    excludeSimilar: false,
-    customSymbols: '',
-    // Avoid characters that can cause issues in connection strings
-    excludeSymbols: "'\"\\/@",
-  },
-  {
-    id: 'mysql',
+    includeUpper: true,
     label: 'MySQL',
     length: 20,
-    includeUpper: true,
-    includeLower: true,
-    includeNumbers: true,
-    includeSymbols: true,
-    excludeSimilar: false,
-    customSymbols: '',
-    // Avoid characters that can interfere with shell or connection strings
-    excludeSymbols: "'\"\\/",
   },
   {
+    customSymbols: '',
+    excludeSimilar: false,
+    // Avoid characters that can cause issues in ODBC connection strings
+    excludeSymbols: '\'" ',
     id: 'mssql',
-    label: 'SQL Server (MSSQL)',
-    length: 20,
-    includeUpper: true,
     includeLower: true,
     includeNumbers: true,
     includeSymbols: true,
-    excludeSimilar: false,
-    customSymbols: '',
-    // Avoid characters that can cause issues in ODBC connection strings
-    excludeSymbols: "'\" ",
+    includeUpper: true,
+    label: 'SQL Server (MSSQL)',
+    length: 20,
   },
 
   // 🧩 Operating Systems / Authentication
   {
+    customSymbols: '',
+    excludeSimilar: false,
+    excludeSymbols: '',
     id: 'htpasswd',
-    label: 'Linux User',
-    length: 16,
-    includeUpper: true,
     includeLower: true,
     includeNumbers: true,
     includeSymbols: false,
-    excludeSimilar: false,
-    customSymbols: '',
-    excludeSymbols: '',
+    includeUpper: true,
+    label: 'Linux User',
+    length: 16,
   },
   {
+    customSymbols: '',
+    excludeSimilar: false,
+    // Avoid characters that can interfere with Windows command-line parsing
+    excludeSymbols: '\'" ',
     id: 'windows-admin',
-    label: 'Windows Admin',
-    length: 16,
-    includeUpper: true,
     includeLower: true,
     includeNumbers: true,
     includeSymbols: true,
-    excludeSimilar: false,
-    customSymbols: '',
-    // Avoid characters that can interfere with Windows command-line parsing
-    excludeSymbols: "'\" ",
+    includeUpper: true,
+    label: 'Windows Admin',
+    length: 16,
   },
 
   // 🧰 Services / Daemons
   {
+    customSymbols: '',
+    excludeSimilar: false,
+    // Avoid characters that can cause issues in connection strings
+    excludeSymbols: '\'"\\,@',
     id: 'redis',
-    label: 'Redis',
-    length: 32,
-    includeUpper: true,
     includeLower: true,
     includeNumbers: true,
     includeSymbols: false,
-    excludeSimilar: false,
-    customSymbols: '',
-    // Avoid characters that can cause issues in connection strings
-    excludeSymbols: "'\"\\,@",
+    includeUpper: true,
+    label: 'Redis',
+    length: 32,
   },
   {
+    customSymbols: '',
+    excludeSimilar: false,
+    // Avoid characters that can cause issues in URI parsing
+    excludeSymbols: '\'";@?',
     id: 'rabbitmq',
-    label: 'RabbitMQ',
-    length: 24,
-    includeUpper: true,
     includeLower: true,
     includeNumbers: true,
     includeSymbols: true,
-    excludeSimilar: false,
-    customSymbols: '',
-    // Avoid characters that can cause issues in URI parsing
-    excludeSymbols: "'\";@?",
+    includeUpper: true,
+    label: 'RabbitMQ',
+    length: 24,
   },
 
   // 🛡️ Security / General Purpose
   {
+    customSymbols: '',
+    excludeSimilar: true,
+    // Avoid ambiguous or problematic characters
+    excludeSymbols: '`\'"\\/',
     id: 'high-entropy',
-    label: 'High Entropy (secure vaults)',
-    length: 64,
-    includeUpper: true,
     includeLower: true,
     includeNumbers: true,
     includeSymbols: true,
-    excludeSimilar: true,
-    customSymbols: '',
-    // Avoid ambiguous or problematic characters
-    excludeSymbols: "`'\"\\/",
+    includeUpper: true,
+    label: 'High Entropy (secure vaults)',
+    length: 64,
   },
 ];

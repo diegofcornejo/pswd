@@ -4,18 +4,19 @@
 </div>
 
 <script is:inline>
-  var canvas = document.getElementById('canvas'),
+  const canvas = document.getElementById('canvas'),
     ctx = canvas.getContext('2d'),
     charArr = 'abcdefghijklmnopqrstuvwxyz'.split(''),
-    fallingCharArr = [],
-    fontSize = 14,
+    fontSize = 14;
+
+  let fallingCharArr = [],
     cw,
     ch,
     maxColumns,
     prevWidth;
 
   function resizeCanvas() {
-    var matrix = document.querySelector('.matrix');
+    const matrix = document.querySelector('.matrix');
     cw = matrix.clientWidth;
     ch = matrix.clientHeight;
 
@@ -30,7 +31,7 @@
       ctx.fillRect(0, 0, cw, ch);
 
       fallingCharArr = [];
-      for (var i = 0; i < maxColumns; i++) {
+      for (let i = 0; i < maxColumns; i++) {
         fallingCharArr.push(new Point(i * fontSize, randomFloat(-500, 0)));
       }
     }
@@ -82,8 +83,8 @@
     requestAnimationFrame(update);
   }
 
-  var matrix = document.querySelector('.matrix');
-  var resizeObserver = new ResizeObserver(() => resizeCanvas());
+  const matrix = document.querySelector('.matrix');
+  const resizeObserver = new ResizeObserver(() => resizeCanvas());
   resizeObserver.observe(matrix);
 
   update();
