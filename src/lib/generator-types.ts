@@ -1,4 +1,4 @@
-export type GeneratorTab = 'normal' | 'diceware' | 'pin';
+export type GeneratorTab = 'normal' | 'diceware' | 'pin' | 'apikey';
 
 export type Separator = 'space' | 'symbol' | 'dash' | 'none';
 
@@ -27,8 +27,17 @@ export type PinOptions = {
   pinLength: number;
 };
 
+export type ApiKeyFormat = 'base62' | 'hex' | 'base64url' | 'uuid';
+
+export type ApiKeyOptions = {
+  format: ApiKeyFormat;
+  length: number;
+  prefix: string;
+};
+
 export type GeneratorState = {
   activeTab: GeneratorTab;
+  apiKey: ApiKeyOptions;
   diceware: DicewareOptions;
   normal: NormalOptions;
   pin: PinOptions;

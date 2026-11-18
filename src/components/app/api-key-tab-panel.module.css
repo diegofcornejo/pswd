@@ -1,0 +1,14 @@
+.fields > :first-child {
+  margin-top: 0;
+}
+
+.entropy {
+  margin-top: 16px;
+  font-family: var(--font-mono);
+  font-size: var(--font-xsm);
+  color: var(--color-foreground-subtle);
+}
+
+.entropy span {
+  color: var(--color-foreground-subtler);
+}

@@ -1,7 +1,11 @@
 import { useState } from 'react';
 
 import { useLocalStorage } from '@/hooks/use-local-storage';
-import type { GeneratorTab, Separator } from '@/lib/generator-types';
+import type {
+  ApiKeyFormat,
+  GeneratorTab,
+  Separator,
+} from '@/lib/generator-types';
 
 export function useGeneratorSettings() {
   const [activeTab, setActiveTab] = useLocalStorage<GeneratorTab>(
@@ -68,10 +72,26 @@ export function useGeneratorSettings() {
 
   const [pinLength, setPinLength] = useLocalStorage('pswd-pin-length', 6);
 
+  const [apiKeyPrefix, setApiKeyPrefix] = useLocalStorage(
+    'pswd-api-key-prefix',
+    '',
+  );
+  const [apiKeyFormat, setApiKeyFormat] = useLocalStorage<ApiKeyFormat>(
+    'pswd-api-key-format',
+    'base62',
+  );
+  const [apiKeyLength, setApiKeyLength] = useLocalStorage(
+    'pswd-api-key-length',
+    32,
+  );
+
   const [selectedPresetId, setSelectedPresetId] = useState<string | null>(null);
 
   const settings = {
     activeTab,
+    apiKeyFormat,
+    apiKeyLength,
+    apiKeyPrefix,
     capitalize,
     customSymbols,
     customWordlist,
@@ -89,6 +109,9 @@ export function useGeneratorSettings() {
     selectedPresetId,
     separator,
     setActiveTab,
+    setApiKeyFormat,
+    setApiKeyLength,
+    setApiKeyPrefix,
     setCapitalize,
     setCustomSymbols,
     setCustomWordlist,

@@ -29,6 +29,12 @@ export function GeneratorTabs({ activeTab, onChange }: GeneratorTabsProps) {
       >
         Pin
       </button>
+      <button
+        className={cn(activeTab === 'apikey' && styles.active)}
+        onClick={() => onChange('apikey')}
+      >
+        API Key
+      </button>
     </div>
   );
 }

@@ -5,6 +5,9 @@ import {
 import { capitalizeString } from '@/helpers/string';
 
 import {
+  BASE62,
+  BASE64URL,
+  HEX,
   LOWERCASE,
   NUMBERS,
   SIMILAR_CHARACTERS,
@@ -12,6 +15,8 @@ import {
   UPPERCASE,
 } from './generator-constants';
 import type {
+  ApiKeyFormat,
+  ApiKeyOptions,
   DicewareOptions,
   NormalOptions,
   PinOptions,
@@ -132,4 +137,54 @@ export function generatePin(options: PinOptions): string {
   }
 
   return passwordCharacters.join('');
+}
+
+const API_KEY_ALPHABETS: Record<Exclude<ApiKeyFormat, 'uuid'>, string> = {
+  base62: BASE62,
+  base64url: BASE64URL,
+  hex: HEX,
+};
+
+function generateUuidV4(): string {
+  const bytes = new Uint8Array(16);
+  window.crypto.getRandomValues(bytes);
+
+  // RFC 9562: version 4 and variant 10xx bits
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+
+  const hex = Array.from(bytes, byte => byte.toString(16).padStart(2, '0'));
+
+  return [
+    hex.slice(0, 4).join(''),
+    hex.slice(4, 6).join(''),
+    hex.slice(6, 8).join(''),
+    hex.slice(8, 10).join(''),
+    hex.slice(10, 16).join(''),
+  ].join('-');
+}
+
+export function generateApiKey(options: ApiKeyOptions): string {
+  const prefix = options.prefix.trim();
+
+  if (options.format === 'uuid') {
+    return prefix + generateUuidV4();
+  }
+
+  const alphabet = API_KEY_ALPHABETS[options.format];
+  const keyCharacters = [];
+
+  for (let i = 0; i < options.length; i++) {
+    keyCharacters.push(alphabet[getSecureRandomInt(alphabet.length)]);
+  }
+
+  return prefix + keyCharacters.join('');
+}
+
+export function getApiKeyEntropyBits(options: ApiKeyOptions): number {
+  if (options.format === 'uuid') return 122;
+
+  const alphabet = API_KEY_ALPHABETS[options.format];
+
+  return Math.floor(options.length * Math.log2(alphabet.length));
 }

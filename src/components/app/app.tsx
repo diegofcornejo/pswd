@@ -4,6 +4,7 @@ import { useGeneratorSettings } from '@/hooks/use-generator-settings';
 import { usePasswordGenerator } from '@/hooks/use-password-generator';
 import { useUrlParamsInit } from '@/hooks/use-url-params-init';
 
+import { ApiKeyTabPanel } from './api-key-tab-panel';
 import { DicewareTabPanel } from './diceware-tab-panel';
 import { GeneratorTabs } from './generator-tabs';
 import { NormalTabPanel } from './normal-tab-panel';
@@ -102,6 +103,17 @@ export function App() {
           <PinTabPanel
             pinLength={settings.pinLength}
             onPinLengthChange={settings.setPinLength}
+          />
+        )}
+
+        {settings.activeTab === 'apikey' && (
+          <ApiKeyTabPanel
+            format={settings.apiKeyFormat}
+            length={settings.apiKeyLength}
+            prefix={settings.apiKeyPrefix}
+            onFormatChange={settings.setApiKeyFormat}
+            onLengthChange={settings.setApiKeyLength}
+            onPrefixChange={settings.setApiKeyPrefix}
           />
         )}
       </div>
