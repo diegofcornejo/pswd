@@ -4,6 +4,7 @@ import { wordlist as defaultWordlist } from '@/data/wordlist';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
 import type { GeneratorTab } from '@/lib/generator-types';
 import {
+  generateApiKey,
   generateDicewarePassword,
   generateNormalPassword,
   generatePin,
@@ -14,6 +15,8 @@ import {
 } from '@/lib/password-strength';
 
 import type { GeneratorSettings } from './use-generator-settings';
+
+const STRENGTHLESS_TABS: GeneratorTab[] = ['pin', 'diceware', 'apikey'];
 
 export function usePasswordGenerator(settings: GeneratorSettings) {
   const [password, setPassword] = useState('');
@@ -64,6 +67,18 @@ export function usePasswordGenerator(settings: GeneratorSettings) {
         return;
       }
 
+      if (settings.activeTab === 'apikey') {
+        setPassword(
+          generateApiKey({
+            format: settings.apiKeyFormat,
+            length: settings.apiKeyLength,
+            prefix: settings.apiKeyPrefix,
+          }),
+        );
+
+        return;
+      }
+
       setPassword(generatePin({ pinLength: settings.pinLength }));
     } catch (error) {
       const message =
@@ -87,6 +102,9 @@ export function usePasswordGenerator(settings: GeneratorSettings) {
     settings.randomNumberBeginning,
     settings.randomNumberEnd,
     settings.pinLength,
+    settings.apiKeyFormat,
+    settings.apiKeyLength,
+    settings.apiKeyPrefix,
     resolvedWordlist,
   ]);
 
@@ -97,22 +115,19 @@ export function usePasswordGenerator(settings: GeneratorSettings) {
   const debouncedPassword = useDebouncedValue(password, 350);
   const [strength, setStrength] = useState(0);
 
+  const isStrengthVisible = !STRENGTHLESS_TABS.includes(settings.activeTab);
+
   useEffect(() => {
-    if (
-      debouncedPassword &&
-      !['pin', 'diceware'].includes(settings.activeTab)
-    ) {
+    if (debouncedPassword && isStrengthVisible) {
       setStrength(resolvePasswordStrength(debouncedPassword));
     } else {
       setStrength(0);
     }
-  }, [debouncedPassword, settings.activeTab]);
+  }, [debouncedPassword, isStrengthVisible]);
 
   return {
     generatePassword,
-    isStrengthVisible: !(['pin', 'diceware'] as GeneratorTab[]).includes(
-      settings.activeTab,
-    ),
+    isStrengthVisible,
     password,
     resolvedWordlist,
     strength,

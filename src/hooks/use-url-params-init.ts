@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from 'react';
 
+import { GENERATOR_TABS } from '@/lib/generator-constants';
 import type { GeneratorTab } from '@/lib/generator-types';
 
 type UrlParamsInitInput = {
@@ -19,7 +20,7 @@ export function useUrlParamsInit({
     const nextWords = Number(urlParams.get('words'));
     const tab = urlParams.get('tab');
 
-    if (tab && ['normal', 'diceware', 'pin'].includes(tab)) {
+    if (tab && (GENERATOR_TABS as readonly string[]).includes(tab)) {
       setActiveTab(tab as GeneratorTab);
     } else if (nextLength > 0) {
       setLength(nextLength);
