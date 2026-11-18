@@ -109,21 +109,23 @@ export function usePasswordGenerator(settings: GeneratorSettings) {
   ]);
 
   useEffect(() => {
+    // Passwords are random and must only be generated on the client (doing it
+    // during render would differ from the server HTML), so an effect is the
+    // right place to regenerate when settings change.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     generatePassword();
-  }, [generatePassword, settings.activeTab]);
+  }, [generatePassword]);
 
   const debouncedPassword = useDebouncedValue(password, 350);
-  const [strength, setStrength] = useState(0);
-
   const isStrengthVisible = !STRENGTHLESS_TABS.includes(settings.activeTab);
 
-  useEffect(() => {
-    if (debouncedPassword && isStrengthVisible) {
-      setStrength(resolvePasswordStrength(debouncedPassword));
-    } else {
-      setStrength(0);
-    }
-  }, [debouncedPassword, isStrengthVisible]);
+  const strength = useMemo(
+    () =>
+      debouncedPassword && isStrengthVisible
+        ? resolvePasswordStrength(debouncedPassword)
+        : 0,
+    [debouncedPassword, isStrengthVisible],
+  );
 
   return {
     generatePassword,

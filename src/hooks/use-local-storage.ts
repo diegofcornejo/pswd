@@ -1,37 +1,80 @@
-import { type Dispatch, type SetStateAction, useEffect, useState } from 'react';
+import {
+  type Dispatch,
+  type SetStateAction,
+  useCallback,
+  useMemo,
+  useSyncExternalStore,
+} from 'react';
 
 type SetValue<T> = Dispatch<SetStateAction<T>>;
 
+const listeners = new Set<() => void>();
+
+// In-memory fallback for when localStorage is unavailable (e.g. blocked by the
+// browser), so settings still work for the current session
+const memory = new Map<string, string>();
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  window.addEventListener('storage', listener);
+
+  return () => {
+    listeners.delete(listener);
+    window.removeEventListener('storage', listener);
+  };
+}
+
+function readItem(key: string): string | null {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return memory.get(key) ?? null;
+  }
+}
+
+function parseItem<T>(raw: string | null, fallback: T): T {
+  if (!raw) return fallback;
+
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return fallback;
+  }
+}
+
 /**
- * A custom React hook to manage state with localStorage persistence.
- *
- * @template T
- * @param {string} key - The key under which the value is stored in localStorage.
- * @param {T} fallback - The fallback value to use if there is no value in localStorage.
- * @returns {[T, SetValue<T>]} An array containing the stateful value and a function to update it.
+ * State persisted in localStorage. Renders `fallback` on the server and during
+ * hydration, then switches to the stored value. Also syncs across tabs.
  */
 export function useLocalStorage<T>(key: string, fallback: T): [T, SetValue<T>] {
-  const [value, setValue] = useState(fallback);
+  const raw = useSyncExternalStore(
+    subscribe,
+    () => readItem(key),
+    () => null,
+  );
 
-  useEffect(() => {
-    const value = localStorage.getItem(key);
+  const value = useMemo(() => parseItem(raw, fallback), [raw, fallback]);
 
-    if (!value) return;
+  const setValue = useCallback<SetValue<T>>(
+    action => {
+      const previous = parseItem(readItem(key), fallback);
+      const next =
+        typeof action === 'function'
+          ? (action as (prev: T) => T)(previous)
+          : action;
 
-    let parsed;
+      const serialized = JSON.stringify(next);
 
-    try {
-      parsed = JSON.parse(value);
-    } catch {
-      parsed = fallback;
-    }
+      try {
+        localStorage.setItem(key, serialized);
+      } catch {
+        memory.set(key, serialized);
+      }
 
-    setValue(parsed);
-  }, [key, fallback]);
-
-  useEffect(() => {
-    localStorage.setItem(key, JSON.stringify(value));
-  }, [value, key]);
+      listeners.forEach(listener => listener());
+    },
+    [key, fallback],
+  );
 
   return [value, setValue];
 }

@@ -1,0 +1,22 @@
+# dependencies and build output (rebuilt inside the image)
+node_modules/
+dist/
+.astro/
+
+# git, editor and CI metadata
+.git/
+.github/
+.husky/
+.vscode/
+.impeccable/
+
+# docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# logs and local env
+npm-debug.log*
+.env
+.env.*
+.DS_Store
